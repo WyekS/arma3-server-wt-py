@@ -18,3 +18,6 @@
   - The script will generate a file `update.log` with a log of the application
   - Care, `execute.sh` does not run the script on background, if you use CTRL+C, you will broke the process
 
+## TODO
+
+  - Some logs does not print by screen (for example when the mod needs an update)

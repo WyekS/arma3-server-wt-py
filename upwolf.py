@@ -51,14 +51,15 @@ WORKSHOP_CHANGELOG_URL = "https://steamcommunity.com/sharedfiles/filedetails/cha
 
 # Lista de MODS. TODO hacer que lea un fichero o una peticion json/html
 MODS = {
+    "FFAA MOD": "820994401",
+    "FFAA MOD ACE3 Compatibility Addon": "792383905",
+    "FFAA Extras": "1303231717",
     "3den_better_inventory": "1124993203",
-    "3den_enhanced": "623475643",
     "ace": "463939057",
     "ace_compat_-_rhs_armed_forces_of_the_russian_federation": "773131200",
     "ace_compat_-_rhs_united_states_armed_forces": "773125288",
     "acex": "708250744",
     "achilles": "723217262",
-    "acre2": "751965892",
     "ADV - ACE Medical": "1353873848",
     "advanced_civilian_interaction_module": "828453337",
     "advanced_towing": "639837898",
@@ -78,6 +79,7 @@ MODS = {
     "project_opfor": "735566597",
     "rhsafrf": "843425103",
     "rhsusaf": "843577117",
+    "rhsgref": "843593391",
     "sma_rhs_compatibility_patch": "1112431110",
     "specialist_military_arms": "699630614",
     "tac_vests": "779568775",
@@ -132,6 +134,9 @@ MODS = {
     "Advanced Ropes": "1105377090"
 }
 
+#   "3den_enhanced": "623475643",
+#   "acre2": "751965892",
+
 def log_head(msg):
     logging.info("")
     logging.info("{{0:=<{}}}".format(len(msg)).format(""))
@@ -155,7 +160,6 @@ def call_steamcmd(user, steam_cmd, params):
     logging.info("")
     if result != 0:
         logging.error("Error when the steamcmd was executed")
-        print("Error illo")
         sys.exit(-1)
 
 # Create symlink
@@ -241,6 +245,8 @@ def update_mods():
             if mod_needs_update(mod_id, path):
                 # Delete existing folder so that we can verify whether the
                 # download succeeded
+                log("Update required for \"{}\" ({})... TO DOWNLOAD".format(
+                    mod_name, mod_id))
                 shutil.rmtree(path)
             else:
                 log("No update required for \"{}\" ({})... SKIPPING".format(
@@ -252,6 +258,7 @@ def update_mods():
             A3_WORKSHOP_ID,
             mod_id
         )
+        steam_cmd_params += "  +force_install_dir {}".format(A3_WORKSHOP_DIR)
     # log("Mods to update: {}".format(steam_cmd_params))
     steam_cmd_params += " +quit"
 
@@ -285,7 +292,7 @@ def lowercase_workshop_dir():
     # os.system("(cd {} && find . -depth -exec rename -v 's/(.*)\/([^\/]*)/$1\/\L$2/' {{}} \;)".format(A3_WORKSHOP_DIR))
     # os.system("su - {} -c \"(cd {} && find . -depth -exec rename -v 's/(.*)\/([^\/]*)/$1\/\L$2/' {{}} \;)\"".format(
     #    A3_SERVER_MASTER, A3_WORKSHOP_DIR))
-    os.system("su - {} -c \"cd {} && ./rename.py .\"".format(A3_SERVER_MASTER, A3_WORKSHOP_DIR))
+    os.system("su - {} -c \"cd {} && /usr/bin/python3 ./rename.py {}\"".format(A3_SERVER_MASTER, A3_WORKSHOP_DIR, A3_WORKSHOP_DIR))
 
 
 def cleanModName(modName):
