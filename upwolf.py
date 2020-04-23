@@ -27,7 +27,7 @@ STEAM_PASS = sys.argv[3]
 A3_SERVER_ID = "233780"
 
 # Grupo de usuario del sistema para la creación de enlaces simbólicos
-A3_GROUP_USER = "arma3server"
+A3_GROUP_USER = "arma3hc"
 
 # Configuracion de lo servidor maestro
 A3_SERVER_MASTER = "arma3hc"
@@ -61,7 +61,6 @@ MODS = {
     "acex": "708250744",
     "achilles": "723217262",
     "ADV - ACE Medical": "1353873848",
-    "advanced_civilian_interaction_module": "828453337",
     "advanced_towing": "639837898",
     "advanced_urban_rappelling": "730310357",
     "alive": "620260972",
@@ -75,7 +74,6 @@ MODS = {
     "jbad": "520618345",
     "kunduz_afghanistan_-_doors_&_multiplayer_fix": "1623903743",
     "mlo": "823636749",
-    "multi-play_uniforms": "779520435",
     "project_opfor": "735566597",
     "rhsafrf": "843425103",
     "rhsusaf": "843577117",
@@ -100,10 +98,6 @@ MODS = {
     "FA-18 Super Hornet":"743099837",
     "G.O.S Al Rayak":"648172507",
     "Jbad":"520618345",
-    "athena":"1181881736",
-    "Advanced Urban Zipline":"1576381952",
-    "Ace Medical Assistant":"1677267612",
-    "Advanced Civilian Interaction Module":"828453337",
     "DES Elevator":"708665067",
     "Distrikt 41 - Ruegen":"835257174",
     "DS Houses":"1113351114",
@@ -130,8 +124,13 @@ MODS = {
     "Rosche Germany" : "1527410521",
     "DEGA Parachutes" : "929073462",
     "Staszow" : "1421161768",
-    "All in One Command Menu": "1893300731",
-    "Advanced Ropes": "1105377090"
+    "Advanced Ropes": "2019840605",
+    "takistan_cup": "1084720856",
+    "immerse": "825172265",
+    "suppress" : "825174634",
+    "Spanish Eurofighter Typhoon": "1339647099",
+    "Eurofighter Typhoon AWS": "1625724231",
+    "pandur ii apc": "864124640"
 }
 
 #   "3den_enhanced": "623475643",
@@ -233,8 +232,6 @@ def update_mods():
     En nuestro caso el usuario maestro es "arma3hc"
 
     '''
-    steam_cmd_params = "+login {} {}".format(STEAM_USER, STEAM_PASS)
-    steam_cmd_params += " +force_install_dir {}".format(A3_SERVER_DIR_MASTER)
 
     for mod_name, mod_id in MODS.items():
         path = "{}/{}".format(A3_WORKSHOP_DIR, mod_id)
@@ -245,25 +242,35 @@ def update_mods():
             if mod_needs_update(mod_id, path):
                 # Delete existing folder so that we can verify whether the
                 # download succeeded
-                log("Update required for \"{}\" ({})... TO DOWNLOAD".format(
-                    mod_name, mod_id))
+                log("Update required for \"{}\" ({})... TO DOWNLOAD".format(mod_name, mod_id))
                 shutil.rmtree(path)
             else:
-                log("No update required for \"{}\" ({})... SKIPPING".format(
-                    mod_name, mod_id))
+                log("No update required for \"{}\" ({})... SKIPPING".format(mod_name, mod_id))
                 continue
 
+        else:
+            log("New mod detected: \"{}\" ({})... TO DOWNLOAD".format(mod_name, mod_id))
+        
+        # Building command to steam
+        steam_cmd_params = " +login {} {} ".format(STEAM_USER, STEAM_PASS)
+        steam_cmd_params += " +force_install_dir {}".format(A3_SERVER_DIR_MASTER) 
+    
         # Keep trying until the download actually succeeded
-        steam_cmd_params += " +workshop_download_item {} {} validate".format(
+        steam_cmd_params += " +workshop_download_item {} {} validate ".format(
             A3_WORKSHOP_ID,
             mod_id
         )
-        steam_cmd_params += "  +force_install_dir {}".format(A3_WORKSHOP_DIR)
-    # log("Mods to update: {}".format(steam_cmd_params))
-    steam_cmd_params += " +quit"
+        # steam_cmd_params += " +force_install_dir {}".format(A3_WORKSHOP_DIR)
 
-    # Llamamos a la consola con el usuario maestro y la lista de mods a actualizar/descargar
-    call_steamcmd(A3_SERVER_MASTER, STEAM_CMD_MASTER, steam_cmd_params)
+        steam_cmd_params += " +quit"
+        log("[update_mods] Mod to update: {}".format(steam_cmd_params))
+
+        # Llamamos a la consola con el usuario maestro y la lista de mods a actualizar/descargar
+        call_steamcmd(A3_SERVER_MASTER, STEAM_CMD_MASTER, steam_cmd_params)
+
+        log("[update_mods] Mod {} updated".format(mod_id))
+        
+    log("[update_mods] FINISHED UPDATE MODS")
 
 # No se está usando este método, se ha comprobar y las instancias funcionan sin cambiar permisos
 def update_permissions_mods():
@@ -292,7 +299,7 @@ def lowercase_workshop_dir():
     # os.system("(cd {} && find . -depth -exec rename -v 's/(.*)\/([^\/]*)/$1\/\L$2/' {{}} \;)".format(A3_WORKSHOP_DIR))
     # os.system("su - {} -c \"(cd {} && find . -depth -exec rename -v 's/(.*)\/([^\/]*)/$1\/\L$2/' {{}} \;)\"".format(
     #    A3_SERVER_MASTER, A3_WORKSHOP_DIR))
-    os.system("su - {} -c \"cd {} && /usr/bin/python3 ./rename.py {}\"".format(A3_SERVER_MASTER, A3_WORKSHOP_DIR, A3_WORKSHOP_DIR))
+    os.system("su - {} -c \"cd {} && /usr/bin/python3 ./rename.py .\"".format(A3_SERVER_MASTER, A3_WORKSHOP_DIR))
 
 
 def cleanModName(modName):
