@@ -5,7 +5,7 @@
   - Screen GNU
   - Configure path to this scripts functions
   - Push 3 params to script `execute` like `./execute.sh 1 2 3`
-    1: (1) Update core and mods (2) Update onlu core (3) Update only mods
+    1: (1) Update core game and mods (2) Update only core game (3) Update only mods
     2: Steam user
     3: Steam pass
   - This script are fully compatibility with several instances of Arma game / users linux
@@ -20,4 +20,4 @@
 
 ## TODO
 
-  - Some logs does not print by screen (for example when the mod needs an update)
+  - Repeat process steamcmd if it's was failed
