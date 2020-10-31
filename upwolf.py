@@ -174,7 +174,7 @@ def call_steamcmd(user, steam_cmd, params):
     logging.info("")
 
     if result != 0:
-        logging.error("Error when the steamcmd was executed " + result + " Retry again")
+        logging.error("Error when the steamcmd was executed {} Retry again".format(result))
         return result
 
     return result
