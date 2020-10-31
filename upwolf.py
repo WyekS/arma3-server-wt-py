@@ -269,7 +269,7 @@ def update_mods():
         else:
             log("New mod detected: \"{}\" ({})... TO DOWNLOAD".format(mod_name, mod_id))
 
-        update_mod(id)
+        update_mod(mod_id)
 
     log("[update_mods] FINISHED UPDATE MODS")
 
