@@ -8,7 +8,8 @@ P3=$3
 
 echo "Starting update server Arma..."
 
+cd /opt/update_arma
 if test -f update.log; then
     rm update.log
 fi
-touch update.log && /usr/bin/python3 /opt/update_arma/upwolf.py $P1 $P2 $P3
+touch update.log && chown arma3hc:arma3hc update.log && /usr/bin/python3 /opt/update_arma/upwolf.py $P1 $P2 $P3
