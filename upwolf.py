@@ -5,7 +5,6 @@ import os
 import os.path
 import re
 import shutil
-import time
 import sys
 import logging
 
@@ -173,9 +172,12 @@ def call_steamcmd(user, steam_cmd, params):
     # log(command)
     result = os.system(command)
     logging.info("")
+
     if result != 0:
-        logging.error("Error when the steamcmd was executed")
-        sys.exit(-1)
+        logging.error("Error when the steamcmd was executed " + result + " Retry again")
+        return result
+
+    return result
 
 # Create symlink
 def create_mod_symlinks(a3_server_dir):
@@ -266,26 +268,9 @@ def update_mods():
 
         else:
             log("New mod detected: \"{}\" ({})... TO DOWNLOAD".format(mod_name, mod_id))
-        
-        # Building command to steam
-        steam_cmd_params = " +login {} {} ".format(STEAM_USER, STEAM_PASS)
-        steam_cmd_params += " +force_install_dir {}".format(A3_SERVER_DIR_MASTER) 
-    
-        # Keep trying until the download actually succeeded
-        steam_cmd_params += " +workshop_download_item {} {} validate ".format(
-            A3_WORKSHOP_ID,
-            mod_id
-        )
-        # steam_cmd_params += " +force_install_dir {}".format(A3_WORKSHOP_DIR)
 
-        steam_cmd_params += " +quit"
-        # log("[update_mods] Mod to update: {}".format(steam_cmd_params))
+        update_mod(id)
 
-        # Llamamos a la consola con el usuario maestro y la lista de mods a actualizar/descargar
-        call_steamcmd(A3_SERVER_MASTER, STEAM_CMD_MASTER, steam_cmd_params)
-
-        log("[update_mods] Mod {} updated".format(mod_id))
-        
     log("[update_mods] FINISHED UPDATE MODS")
 
 
@@ -305,7 +290,12 @@ def update_mod(id):
     )
     steam_cmd_params += " +quit"
 
-    call_steamcmd(A3_SERVER_MASTER, STEAM_CMD_MASTER, steam_cmd_params)
+    for i in range(3):
+        if call_steamcmd(A3_SERVER_MASTER, STEAM_CMD_MASTER, steam_cmd_params) == 0:
+            log("[update_mods] Mod {} downloaded successfully".format(id))
+            break
+        else:
+            log("[update_mods] Retry download again mod {}".format(id))
 
     log("[update_mods] Mod {} updated".format(id))
 
@@ -372,6 +362,7 @@ if argument != "":
         sys.exit(0)
 
     # Actualiza los mods, solo se realiza en master, los esclavos usan esta ruta
+    mod_list = ""
     if argument == "1" or argument == "3":
         log_head("Updating mods to MASTER")
         update_mods()
